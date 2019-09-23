@@ -11,8 +11,8 @@ import thunk from 'redux-thunk'
 const SET_POSITION = "SET_POSITION"
 const SET_CLOSEST_STATION = "SET_CLOSEST_STATION"
 const SET_DATA = "SET_DATA"
-const SET_DATE = "SET_DATE"
-const SET_QUALITY = "SET_QUALITY"
+const SET_SUMMARY = "SET_SUMMARY"
+const RESET = "RESET"
 
 ///////////////////////////////////////////////////////DEFAULT_STORE///////////////////////////////////////////////////////
 
@@ -30,8 +30,11 @@ const defaultState =
         distance: ""
     },
     data: [],
-    quality: "",
-    date: 0
+    summary:
+    {
+        quality: "",
+        date: 0
+    }
 }
 
 ///////////////////////////////////////////////////////ACTION CREATORS///////////////////////////////////////////////////////
@@ -51,14 +54,14 @@ const setData = (value) =>
     return {type: SET_DATA, value: value}
 }
 
-const setDate = (value) =>
+const setSummary = (value) =>
 {
-    return {type: SET_DATE, value: value}
+    return {type: SET_SUMMARY, value: value}
 }
 
-const setQuality = (value) =>
+const reset = () =>
 {
-    return {type: SET_QUALITY, value: value}
+    return {type: RESET}
 }
 
 ///////////////////////////////////////////////////////REDUCER///////////////////////////////////////////////////////
@@ -68,15 +71,15 @@ const reducer = (state = defaultState, action) =>
 
     switch(action.type)
     {
+        case RESET:                 return defaultState;
         case SET_POSITION:          return Object.assign({},state, {position: action.value});
         case SET_CLOSEST_STATION:   return Object.assign({},state, {closestStation: action.value});
         case SET_DATA:              return Object.assign({},state, {data: action.value});
-        case SET_DATE:              return Object.assign({},state, {date: action.value});
-        case SET_QUALITY:           return Object.assign({},state, {quality: action.value});
+        case SET_SUMMARY:           return Object.assign({},state, {summary: action.value});
         default: return defaultState;
     }
 }
 
 const store = createStore(reducer);
 
-export {store, setPosition, setClosestStation, setData, setDate, setQuality}
+export {store, setPosition, setClosestStation, setData, setSummary, reset}

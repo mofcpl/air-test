@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from 'react-redux'
 
-import {store, setPosition, setClosestStation, setData, setDate, setQuality} from "./redux-store.js"
+import {store, setPosition, setClosestStation, setData, setSummary, reset} from "./redux-store.js"
 
 class App extends React.Component
 {
@@ -78,23 +78,19 @@ class App extends React.Component
             const index = resp[closestStationIndex].id;
             const distance = closestDistance;
 
+            console.log("submitSetClosestStation");
             this.props.submitSetClosestStation({index, name, distance});
 
         });
     }
 
     loadPosition()
-    {
-        const position =
-        {
-            latitude: 0,
-            longitude: 0
-        }
-        
+    {        
         if (navigator.geolocation)
         {
           navigator.geolocation.getCurrentPosition(position => 
           {
+            console.log("submitSetPosition");
             this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
           });
         }
@@ -112,15 +108,24 @@ class App extends React.Component
             resp.forEach( (element, index, array) =>
             {
                 let value = 0;
-                
+             
                 fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/data/getData/"+element.id)
                 .then(resp2 => resp2.json())
                 .then( (resp2) => 
                 {
                     console.log(resp2)
-                    tempArray.push({name: resp[index].param.paramName, value: resp2.values[1].value, date: resp2.values[1].date});
+                    
+                    let j = 0;
+
+                    while(!resp2.values[j].value)
+                    {
+                        j++;
+                    }
+
+                    tempArray.push({name: resp[index].param.paramName, value: resp2.values[j].value, date: resp2.values[j].date});
                     if(tempArray.length === resp.length) 
                     {
+                        console.log("submitSetData");
                         this.props.submitSetData(tempArray);
                     }
                 });
@@ -136,38 +141,45 @@ class App extends React.Component
         .then( resp => 
         {
             console.log(resp);
-            this.props.submitSetDate(resp.stCalcDate);
-            this.props.submitSetQuality(resp.stIndexLevel.indexLevelName);
+            console.log("submitSetSummary");
+            this.props.submitSetSummary({quality: resp.stIndexLevel.indexLevelName, date: resp.stCalcDate});
         });
     }
 
     componentDidUpdate(prevProps)
     {      
-        if(this.props.state.position !== prevProps.state.position)
+        if(prevProps.state.position.latitude == 0 && this.props.state.position.latitude != 0)
         {
+            console.log("findNearestStation");
             this.findNearestStation();
         }
 
-        if(this.props.state.closestStation.index !== prevProps.state.closestStation.index)
+        if(prevProps.state.closestStation.index == 0 && this.props.state.closestStation.index != 0)
         {
+            console.log("loadStation");
             this.loadStation();
-        }
-
-        if(this.props.state.closestStation.index !== prevProps.state.closestStation.index)
-        {
+            console.log("getSummary");
             this.getSummary();
         }
     }
 
     checkAir()
     {
-        this.loadPosition();
+        const promise = new Promise((resolve => resolve()));
+
+        promise.then(() => this.props.submitReset()).then( () => this.loadPosition());
+    
+    }
+
+    componentDidMount()
+    {
+        //this.loadPosition();  
     }
 
     render()
     {
 
-        const data = this.props.state.data.map( (currentValue,index) => <p key={index}>{currentValue.name}: {currentValue.value}</p>);
+        const data = this.props.state.data.map( (currentValue,index) => <p key={index}>{currentValue.name}: {currentValue.value}μg/m3 - {currentValue.date}</p>);
 
         return(
         <div id="container">
@@ -180,9 +192,9 @@ class App extends React.Component
             <p><strong>Pomiary:</strong></p>
             {data}
             <p><strong>Podsumowanie:</strong></p>
-            <p>Stan jakości powietrza: {this.props.state.quality}</p>
-            <p>Data uzyskania pomiaru: {this.props.state.date}</p>
-            <button onClick={this.checkAir}>Sprawdź!</button>
+            <p>Stan jakości powietrza: {this.props.state.summary.quality}</p>
+            <p>Data uzyskania pomiaru: {this.props.state.summary.date}</p>
+            <button onClick={this.checkAir}>Odśwież</button>
             
         </div>
         );
@@ -201,8 +213,8 @@ const mapDispatchToProps = (dispatch) =>
         submitSetPosition: (value) =>           {dispatch(setPosition(value))},
         submitSetClosestStation: (value) =>     {dispatch(setClosestStation(value))},
         submitSetData: (value) =>               {dispatch(setData(value))},
-        submitSetDate: (value) =>               {dispatch(setDate(value))},
-        submitSetQuality: (value) =>            {dispatch(setQuality(value))}
+        submitSetSummary: (value) =>            {dispatch(setSummary(value))},
+        submitReset: () =>                      {dispatch(reset())}
     }
 }
 
