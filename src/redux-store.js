@@ -10,15 +10,18 @@ import thunk from 'redux-thunk'
 
 const SET_POSITION = "SET_POSITION"
 const SET_CLOSEST_STATION = "SET_CLOSEST_STATION"
-const SET_DATA = "SET_DATA"
+const SET_SENSORS = "SET_SENSORS"
 const SET_SUMMARY = "SET_SUMMARY"
 const RESET = "RESET"
 const SET_INDEXES = "SET_INDEXES"
+const SET_STATUS = "SET_STATUS"
+const SET_DATA = "SET_DATA"
 
 ///////////////////////////////////////////////////////DEFAULT_STORE///////////////////////////////////////////////////////
-
+// START -> POSITION -> NEAREST_STATION -> SENSORS -> DATA -> SUMMARY -> READY
 const defaultState =
 {
+    status: "START", 
     position:
     {
         latitude: 0,
@@ -50,9 +53,9 @@ const setClosestStation = (value) =>
     return {type: SET_CLOSEST_STATION, value: value}
 }
 
-const setData = (value) =>
+const setSensors = (value) =>
 {
-    return {type: SET_DATA, value: value}
+    return {type: SET_SENSORS, value: value}
 }
 
 const setSummary = (value) =>
@@ -70,6 +73,16 @@ const setIndexes = (index, value) =>
     return {type: SET_INDEXES, index: index, value: value}
 }
 
+const setStatus = (value) =>
+{
+    return {type: SET_STATUS, value: value}
+}
+
+const setData = (index, value) =>
+{
+    return {type: SET_DATA, value: value, index: index}
+}
+
 ///////////////////////////////////////////////////////REDUCER///////////////////////////////////////////////////////
 
 const reducer = (state = defaultState, action) =>
@@ -80,19 +93,28 @@ const reducer = (state = defaultState, action) =>
         case RESET:                 return defaultState;
         case SET_POSITION:          return Object.assign({},state, {position: action.value});
         case SET_CLOSEST_STATION:   return Object.assign({},state, {closestStation: action.value});
-        case SET_DATA:              return Object.assign({},state, {data: action.value});
         case SET_SUMMARY:           return Object.assign({},state, {summary: action.value});
+        case SET_STATUS:            return Object.assign({},state, {status: action.value});
+        case SET_SENSORS:
+        return{
+            ...state,
+            data: [...state.data, action.value]
+        }   
         case SET_INDEXES:
-        {           
-            return{
-                ...state,
-                data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, index: action.value} : currentValue)
-            }
+        return{
+            ...state,
+            data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, index: action.value} : currentValue)
         }
+        case SET_DATA:
+        return{
+            ...state,
+            data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, value: action.value} : currentValue)
+        }
+
         default: return defaultState;
     }
 }
 
 const store = createStore(reducer);
 
-export {store, setPosition, setClosestStation, setData, setSummary, reset, setIndexes}
+export {store, setPosition, setClosestStation, setSensors, setSummary, reset, setIndexes, setStatus, setData}
