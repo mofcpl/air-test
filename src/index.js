@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from 'react-redux'
 
-import {store, setPosition, setClosestStation, setData, setSummary, reset} from "./redux-store.js"
+import {store, setPosition, setClosestStation, setData, setSummary, reset, setIndexes} from "./redux-store.js"
 
 class App extends React.Component
 {
@@ -122,7 +122,9 @@ class App extends React.Component
                         j++;
                     }
 
-                    tempArray.push({name: resp[index].param.paramName, value: resp2.values[j].value, date: resp2.values[j].date});
+                    const tempName = resp[index].param.paramCode.toLowerCase().replace('.',"");
+
+                    tempArray.push({name: resp[index].param.paramName, code: tempName, value: resp2.values[j].value, date: resp2.values[j].date, index: ""});
                     if(tempArray.length === resp.length) 
                     {
                         console.log("submitSetData");
@@ -142,6 +144,12 @@ class App extends React.Component
         {
             console.log(resp);
             console.log("submitSetSummary");
+            for(let i = 0; i < this.props.state.data.length; i++)
+            {
+                const tempName = this.props.state.data[i].code+'IndexLevel';
+
+                this.props.submitSetIndexes(i,resp[tempName].indexLevelName);
+            }
             this.props.submitSetSummary({quality: resp.stIndexLevel.indexLevelName, date: resp.stCalcDate});
         });
     }
@@ -158,6 +166,10 @@ class App extends React.Component
         {
             console.log("loadStation");
             this.loadStation();
+        }
+
+        if(prevProps.state.data.length == 0 && this.props.state.data.length != 0)
+        {
             console.log("getSummary");
             this.getSummary();
         }
@@ -178,14 +190,15 @@ class App extends React.Component
 
     render()
     {
-
-        const data = this.props.state.data.map( (currentValue,index) => <p key={index}>{currentValue.name}: {currentValue.value}μg/m3 - {currentValue.date}</p>);
+        const data = this.props.state.data.map( (currentValue,index) => <p key={index}>{currentValue.name}: {currentValue.index} ({currentValue.value}μg/m3)</p>);
 
         return(
         <div id="container">
-            <p><strong>Twoja pozycja:</strong></p>
-            <p>Szerokośc: {this.props.state.position.latitude}</p>
-            <p>Wysokość: {this.props.state.position.longitude}</p>
+            {/*
+                <p><strong>Twoja pozycja:</strong></p>
+                <p>Szerokośc: {this.props.state.position.latitude}</p>
+                <p>Wysokość: {this.props.state.position.longitude}</p>
+            */}
             <p><strong>Najbliższa stacja:</strong></p>
             <p>Nazwa: {this.props.state.closestStation.name}</p>
             <p>Odległość: {Math.round(this.props.state.closestStation.distance)} metrów</p>
@@ -214,7 +227,8 @@ const mapDispatchToProps = (dispatch) =>
         submitSetClosestStation: (value) =>     {dispatch(setClosestStation(value))},
         submitSetData: (value) =>               {dispatch(setData(value))},
         submitSetSummary: (value) =>            {dispatch(setSummary(value))},
-        submitReset: () =>                      {dispatch(reset())}
+        submitReset: () =>                      {dispatch(reset())},
+        submitSetIndexes: (index, value) =>     {dispatch(setIndexes(index, value));}
     }
 }
 

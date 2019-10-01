@@ -13,6 +13,7 @@ const SET_CLOSEST_STATION = "SET_CLOSEST_STATION"
 const SET_DATA = "SET_DATA"
 const SET_SUMMARY = "SET_SUMMARY"
 const RESET = "RESET"
+const SET_INDEXES = "SET_INDEXES"
 
 ///////////////////////////////////////////////////////DEFAULT_STORE///////////////////////////////////////////////////////
 
@@ -64,6 +65,11 @@ const reset = () =>
     return {type: RESET}
 }
 
+const setIndexes = (index, value) =>
+{
+    return {type: SET_INDEXES, index: index, value: value}
+}
+
 ///////////////////////////////////////////////////////REDUCER///////////////////////////////////////////////////////
 
 const reducer = (state = defaultState, action) =>
@@ -76,10 +82,17 @@ const reducer = (state = defaultState, action) =>
         case SET_CLOSEST_STATION:   return Object.assign({},state, {closestStation: action.value});
         case SET_DATA:              return Object.assign({},state, {data: action.value});
         case SET_SUMMARY:           return Object.assign({},state, {summary: action.value});
+        case SET_INDEXES:
+        {           
+            return{
+                ...state,
+                data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, index: action.value} : currentValue)
+            }
+        }
         default: return defaultState;
     }
 }
 
 const store = createStore(reducer);
 
-export {store, setPosition, setClosestStation, setData, setSummary, reset}
+export {store, setPosition, setClosestStation, setData, setSummary, reset, setIndexes}
