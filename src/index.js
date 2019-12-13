@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from 'react-redux'
 
+import {Summary, Data, Station, Button, Title} from "./interface.jsx"
 import {store, setPosition, setClosestStation, setSensors, setSummary, reset, setIndexes, setStatus, setData} from "./redux-store.js"
 
 class App extends React.Component
@@ -12,6 +13,11 @@ class App extends React.Component
     {
         super(props);
 
+        this.state =
+        {
+            ticks: 0
+        }
+
         this.loadPosition =         this.loadPosition.bind(this);
         this.checkAir =             this.checkAir.bind(this);
         this.findNearestStation =   this.findNearestStation.bind(this);
@@ -19,6 +25,12 @@ class App extends React.Component
         this.calcDistance =         this.calcDistance.bind(this);
         this.loadSensors =          this.loadSensors.bind(this);
         this.loadData =             this.loadData.bind(this);
+        this.addTick =              this.addTick.bind(this);
+    }
+
+    addTick()
+    {
+        this.setState({ticks: this.state.ticks + 1});
     }
 
     //https://stackoverflow.com/a/1502821
@@ -49,6 +61,7 @@ class App extends React.Component
           navigator.geolocation.getCurrentPosition(position => 
           {
             this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
+            //this.props.submitSetPosition({latitude: 50.031389, longitude: 19.938333});
             console.log("calculating position...done");
             this.props.submitSetStatus("POSITION");
           });
@@ -215,9 +228,10 @@ class App extends React.Component
             for(let i = 0; i < this.props.state.data.length; i++)
             {
                 const tempName = this.props.state.data[i].code+'IndexLevel';
-                this.props.submitSetIndexes(i,resp[tempName].indexLevelName);
+                if(!resp[tempName]) continue;
+                this.props.submitSetIndexes(i,resp[tempName].indexLevelName, resp[tempName].id);
             }
-            this.props.submitSetSummary({quality: resp.stIndexLevel.indexLevelName, date: resp.stSourceDataDate});
+            this.props.submitSetSummary({quality: resp.stIndexLevel.indexLevelName, date: resp.stSourceDataDate, id: resp.stIndexLevel.id});
         }).then( () =>
         {
             console.log("loading summary from station...done");
@@ -286,31 +300,29 @@ class App extends React.Component
 
     componentDidMount()
     {
-        //this.loadPosition();  
+        
     }
 
     render()
     {
-        const data = this.props.state.data.map( (currentValue,index) => <p key={index}>{currentValue.name}: {currentValue.index} ({currentValue.value}μg/m3)</p>);
+    
 
         return(
-        <div id="container">
+        <main>
             {/*
                 <p><strong>Twoja pozycja:</strong></p>
                 <p>Szerokośc: {this.props.state.position.latitude}</p>
                 <p>Wysokość: {this.props.state.position.longitude}</p>
+                
+                <Title />
             */}
-            <p><strong>Najbliższa stacja:</strong></p>
-            <p>Nazwa: {this.props.state.closestStation.name}</p>
-            <p>Odległość: {Math.round(this.props.state.closestStation.distance)} metrów</p>
-            <p><strong>Pomiary:</strong></p>
-            {data}
-            <p><strong>Podsumowanie:</strong></p>
-            <p>Stan jakości powietrza: {this.props.state.summary.quality}</p>
-            <p>Data uzyskania pomiaru: {this.props.state.summary.date}</p>
-            <button onClick={this.checkAir}>Odśwież</button>
-            
-        </div>
+
+            <Station data={this.props.state} />
+            <Data data={this.props.state} />
+            <Summary data={this.props.state} />
+            <Button checkAir={this.checkAir} />
+
+        </main>
         );
 
     }
@@ -329,7 +341,7 @@ const mapDispatchToProps = (dispatch) =>
         submitSetSensors: (value) =>{dispatch(setSensors(value))},
         submitSetSummary: (value) =>            {dispatch(setSummary(value))},
         submitReset: () =>                      {dispatch(reset())},
-        submitSetIndexes: (index, value) =>     {dispatch(setIndexes(index, value))},
+        submitSetIndexes: (index, value, value2) =>     {dispatch(setIndexes(index, value, value2))},
         submitSetStatus: (value) =>             {dispatch(setStatus(value))},
         submitSetData: (index, value) =>   {dispatch(setData(index, value))}
     }
