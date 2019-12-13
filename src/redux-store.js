@@ -29,7 +29,7 @@ const defaultState =
     },
     closestStation: 
     {
-        index: 0,
+        index: "",
         name: "",
         distance: ""
     },
@@ -37,7 +37,7 @@ const defaultState =
     summary:
     {
         quality: "",
-        date: 0
+        date: ""
     }
 }
 
@@ -68,9 +68,9 @@ const reset = () =>
     return {type: RESET}
 }
 
-const setIndexes = (index, value) =>
+const setIndexes = (index, value, value2) =>
 {
-    return {type: SET_INDEXES, index: index, value: value}
+    return {type: SET_INDEXES, index: index, value: value, value2: value2}
 }
 
 const setStatus = (value) =>
@@ -103,7 +103,7 @@ const reducer = (state = defaultState, action) =>
         case SET_INDEXES:
         return{
             ...state,
-            data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, index: action.value} : currentValue)
+            data: state.data.map((currentValue, index) => (index === action.index) ? {...currentValue, index: action.value, id: action.value2} : currentValue)
         }
         case SET_DATA:
         return{
