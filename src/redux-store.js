@@ -37,7 +37,8 @@ const defaultState =
     summary:
     {
         quality: "",
-        date: ""
+        date: "",
+        id: ""
     }
 }
 

@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from 'react-redux'
 
-import {Summary, Data, Station, Button, Title} from "./interface.jsx"
+import {Summary, Data, Station, Button, Title, Desc} from "./interface.jsx"
 import {store, setPosition, setClosestStation, setSensors, setSummary, reset, setIndexes, setStatus, setData} from "./redux-store.js"
 
 class App extends React.Component
@@ -61,7 +61,7 @@ class App extends React.Component
           navigator.geolocation.getCurrentPosition(position => 
           {
             this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
-            //this.props.submitSetPosition({latitude: 50.031389, longitude: 19.938333});
+            //this.props.submitSetPosition({latitude: 52.131389, longitude: 20.138333});
             console.log("calculating position...done");
             this.props.submitSetStatus("POSITION");
           });
@@ -313,14 +313,16 @@ class App extends React.Component
                 <p><strong>Twoja pozycja:</strong></p>
                 <p>Szerokośc: {this.props.state.position.latitude}</p>
                 <p>Wysokość: {this.props.state.position.longitude}</p>
-                
+                <Desc data={this.props.state} />
                 <Title />
             */}
 
+            <Title />
             <Station data={this.props.state} />
             <Data data={this.props.state} />
             <Summary data={this.props.state} />
             <Button checkAir={this.checkAir} />
+            <Desc data={this.props.state} />
 
         </main>
         );
