@@ -23,6 +23,7 @@ body, html, #App
   text-align: center;
   font-family: 'Lato', sans-serif;
   background-color: white;
+  background-image: url("background.jpg");
 }
 
 #App
@@ -99,7 +100,11 @@ body, html, #App
 }
 
 
-
+a
+{
+  text-decoration: none;
+  color: black;
+}
 
 
 

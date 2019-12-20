@@ -168,10 +168,14 @@ export const Desc = (props) =>
                 <div id="level6"></div>
             </div>
             <div id="text-desc">
-                {(index == "")? 'Naciśnij przycisk aby sprawdzić jakość powietrza w twojej okolicy': indexDesc[index]}
+                {(index === "")? 'Naciśnij przycisk aby sprawdzić jakość powietrza w twojej okolicy': indexDesc[index]}
             </div>
-            <div id="note">Dane oraz opisy indeksów prezentowane na stronie airtest.pl pochodzą z serwisu <a>powietrze.gios.gov.pl</a> administrowanego przez Główny Inspektorat Ochrony Środowiska</div>
-            <div id="links"></div>
+            <div id="note">Dane oraz opisy indeksów prezentowane na stronie airtest.pl pochodzą z serwisu <a href="http://powietrze.gios.gov.pl/pjp/home" target="_blank">powietrze.gios.gov.pl</a> administrowanego przez Główny Inspektorat Ochrony Środowiska</div>
+            <div id="links">
+                <i className="icon-home" />
+                <a href="https://github.com/mofcpl" target="_blank"><i className="icon-github-circled" /></a>
+                <a href="https://www.linkedin.com/in/zbrogdom/" target="_blank"><i className="icon-linkedin-squared" /></a>
+            </div>
     </div> 
     )
 }

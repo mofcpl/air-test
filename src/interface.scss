@@ -314,6 +314,24 @@ main
     {
         padding: 1vw;
         font-size: 1vw;
+
+        a
+        {
+            color: #57b108;
+        }
+    }
+
+    #links
+    {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        font-size: 3vw;
+
+        .icon-linkedin-squared
+        {
+            color: #0077B5;
+        }
     }
 
     #color-bars

@@ -1,4 +1,5 @@
 import style from "./main.scss";
+import "./css/fontello.css"
 
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
@@ -60,8 +61,8 @@ class App extends React.Component
         {
           navigator.geolocation.getCurrentPosition(position => 
           {
-            this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
-            //this.props.submitSetPosition({latitude: 52.131389, longitude: 20.138333});
+            //this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
+            this.props.submitSetPosition({latitude: 50.874167, longitude: 20.633333});
             console.log("calculating position...done");
             this.props.submitSetStatus("POSITION");
           });
