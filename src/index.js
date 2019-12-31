@@ -8,6 +8,8 @@ import { Provider, connect } from 'react-redux'
 import {Summary, Data, Station, Button, Title, Desc} from "./interface.jsx"
 import {store, setPosition, setClosestStation, setSensors, setSummary, reset, setIndexes, setStatus, setData} from "./redux-store.js"
 
+require("babel-polyfill");
+
 class App extends React.Component
 {
     constructor(props)
@@ -61,8 +63,8 @@ class App extends React.Component
         {
           navigator.geolocation.getCurrentPosition(position => 
           {
-            //this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
-            this.props.submitSetPosition({latitude: 50.874167, longitude: 20.633333});
+            this.props.submitSetPosition({latitude: position.coords.latitude, longitude: position.coords.longitude});
+            //this.props.submitSetPosition({latitude: 50.874167, longitude: 20.633333});
             console.log("calculating position...done");
             this.props.submitSetStatus("POSITION");
           });
@@ -70,174 +72,122 @@ class App extends React.Component
         
     }
     
-    findNearestStation()
+    async findNearestStation()
     {
         console.log("finding nearest station...");
-        fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/station/findAll")
-        .then(resp => resp.json())
-        .then( resp => 
+        const response = await fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/station/findAll")
+        const jsonData = await response.json();
+
+        console.log(jsonData);
+
+        let closestStationIndex = 0;
+        let closestDistance = 0;
+
+        const myLat = this.props.state.position.latitude;
+        const myLng = this.props.state.position.longitude;
+
+        jsonData.forEach( (element, index, array) =>
         {
-            console.log(resp);
+            const newLat = element.gegrLat;
+            const newLng = element.gegrLon;
+            
+            const newDistance = this.calcDistance({lat: myLat, lng: myLng},{lat: newLat, lng: newLng});
 
-            let closestStationIndex = 0;
-            let closestDistance = 0;
-
-            const myLat = this.props.state.position.latitude;
-            const myLng = this.props.state.position.longitude;
-
-            resp.forEach( (element, index, array) =>
+            if(index == 0)
             {
-                const newLat = element.gegrLat;
-                const newLng = element.gegrLon;
-                
-                const newDistance = this.calcDistance({lat: myLat, lng: myLng},{lat: newLat, lng: newLng});
-
-                if(index == 0)
+                closestStationIndex = index;
+                closestDistance = newDistance;
+            }
+            else
+            {
+                if(newDistance < closestDistance)
                 {
                     closestStationIndex = index;
                     closestDistance = newDistance;
                 }
-                else
-                {
-                    if(newDistance < closestDistance)
-                    {
-                        closestStationIndex = index;
-                        closestDistance = newDistance;
-                    }
-                }
-            });
-
-            const name = resp[closestStationIndex].stationName;
-            const index = resp[closestStationIndex].id;
-            const distance = closestDistance;
-
-            this.props.submitSetClosestStation({index, name, distance});
-            
-        }).then( () =>
-        {
-            console.log("finding nearest station...done");
-            this.props.submitSetStatus("NEAREST_STATION");
+            }
         });
-    }
-    /*
-    loadStation()
-    {
-        const tempArray = [];
+
+        const name = jsonData[closestStationIndex].stationName;
+        const index = jsonData[closestStationIndex].id;
+        const distance = closestDistance;
+
+        this.props.submitSetClosestStation({index, name, distance});
         
-        fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/station/sensors/"+this.props.state.closestStation.index)
-        .then(resp => resp.json())
-        .then( resp => 
-        {
-            console.log(resp);
 
-            console.log("submitSetData");
-            const tempName = resp[index].param.paramCode.toLowerCase().replace('.',"");
-            this.props.submitSetData({name: resp[index].param.paramName, code: tempName});
 
-            resp.forEach( (element, index, array) =>
-            {
-                let value = 0;
-             
-                fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/data/getData/"+element.id)
-                .then(resp2 => resp2.json())
-                .then( (resp2) => 
-                {
-                    console.log(resp2)
-                    
-                    let j = 0;
+        console.log("finding nearest station...done");
+        this.props.submitSetStatus("NEAREST_STATION");
 
-                    while(!resp2.values[j].value)
-                    {
-                        j++;
-                    }
-
-                    const tempName = resp[index].param.paramCode.toLowerCase().replace('.',"");
-
-                    tempArray.push({name: resp[index].param.paramName, code: tempName, value: resp2.values[j].value, date: resp2.values[j].date});
-                    if(tempArray.length === resp.length) 
-                    {
-
-                    }
-                });
-            })
-        })
     }
-    */
-    loadSensors()
+
+    async loadSensors()
     {
         console.log("loading sensors from station...");
-        fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/station/sensors/"+this.props.state.closestStation.index)
-        .then(resp => resp.json())
-        .then( resp => 
+        const response = await fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/station/sensors/"+this.props.state.closestStation.index)
+        const jsonData = await response.json();
+
+        console.log(jsonData);
+
+        jsonData.forEach( (element, index, array) =>
         {
+            const tempName = jsonData[index].param.paramCode.toLowerCase().replace('.',"");
+            this.props.submitSetSensors({id: jsonData[index].id, name: jsonData[index].param.paramName, code: tempName});
+        });
 
-            console.log(resp);
+        console.log("loading sensors from station...done");
+        this.props.submitSetStatus("SENSORS");
 
-            resp.forEach( (element, index, array) =>
-            {
-                const tempName = resp[index].param.paramCode.toLowerCase().replace('.',"");
-                this.props.submitSetSensors({id: resp[index].id, name: resp[index].param.paramName, code: tempName});
-            });
-
-        }).then( () =>
-        {
-            console.log("loading sensors from station...done");
-            this.props.submitSetStatus("SENSORS");
-        })
     }
 
-    loadData()
+    async loadData()
     {
         console.log("loading data from station...");
         let number = 0;
-        this.props.state.data.forEach( (element, index, array) =>
+        this.props.state.data.forEach( async (element, index, array) =>
         {
-            fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/data/getData/"+ element.id)
-            .then(resp => resp.json())
-            .then( (resp) => 
-            {
-                number++;
-                console.log(resp)
-                
-                let j = 0;
+            const response = await fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/data/getData/"+ element.id)
+            const jsonData = await response.json();
 
-                while(!resp.values[j].value)
-                {
-                    j++;
-                }
+            number++;
+            console.log(jsonData)
+            
+            let j = 0;
 
-                this.props.submitSetData(index, resp.values[j].value);
-            }).then( () =>
+            while(!jsonData.values[j].value)
             {
-                if(number >= array.length)
-                {
-                    console.log("loading data from station...done");
-                    this.props.submitSetStatus("DATA");
-                }
-            });
+                j++;
+            }
+
+            this.props.submitSetData(index, jsonData.values[j].value);
+
+            if(number >= array.length)
+            {
+                console.log("loading data from station...done");
+                this.props.submitSetStatus("DATA");
+            }
+
         })
     }
 
-    loadSummary()
+    async loadSummary()
     {
         console.log("loading summary from station...");
-        fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/aqindex/getIndex/"+this.props.state.closestStation.index)
-        .then(resp => resp.json())
-        .then( resp => 
+        const response = await fetch("https://cors-anywhere.herokuapp.com/"+"http://api.gios.gov.pl/pjp-api/rest/aqindex/getIndex/"+this.props.state.closestStation.index)
+        const jsonData = await response.json();
+
+        console.log(jsonData);
+        for(let i = 0; i < this.props.state.data.length; i++)
         {
-            console.log(resp);
-            for(let i = 0; i < this.props.state.data.length; i++)
-            {
-                const tempName = this.props.state.data[i].code+'IndexLevel';
-                if(!resp[tempName]) continue;
-                this.props.submitSetIndexes(i,resp[tempName].indexLevelName, resp[tempName].id);
-            }
-            this.props.submitSetSummary({quality: resp.stIndexLevel.indexLevelName, date: resp.stSourceDataDate, id: resp.stIndexLevel.id});
-        }).then( () =>
-        {
-            console.log("loading summary from station...done");
-            this.props.submitSetStatus("SUMMARY");   
-        });
+            const tempName = this.props.state.data[i].code+'IndexLevel';
+            if(!jsonData[tempName]) continue;
+            this.props.submitSetIndexes(i,jsonData[tempName].indexLevelName, jsonData[tempName].id);
+        }
+        this.props.submitSetSummary({quality: jsonData.stIndexLevel.indexLevelName, date: jsonData.stSourceDataDate, id: jsonData.stIndexLevel.id});
+
+        console.log("loading summary from station...done");
+        this.props.submitSetStatus("SUMMARY");   
+
     }
 
     componentDidUpdate(prevProps)
@@ -272,23 +222,6 @@ class App extends React.Component
             }
         }
         
-        /*if(prevProps.state.position.latitude == 0 && this.props.state.position.latitude != 0)
-        {
-            console.log("findNearestStation");
-            this.findNearestStation();
-        }
-
-        if(prevProps.state.closestStation.index == 0 && this.props.state.closestStation.index != 0)
-        {
-            console.log("loadStation");
-            this.loadStation();
-        }
-
-        if(prevProps.state.data.length == 0 && this.props.state.data.length != 0)
-        {
-            console.log("getSummary");
-            this.loadSummary();
-        }*/
     }
 
     checkAir()
@@ -310,13 +243,6 @@ class App extends React.Component
 
         return(
         <main>
-            {/*
-                <p><strong>Twoja pozycja:</strong></p>
-                <p>Szerokośc: {this.props.state.position.latitude}</p>
-                <p>Wysokość: {this.props.state.position.longitude}</p>
-                <Desc data={this.props.state} />
-                <Title />
-            */}
 
             <Title />
             <Station data={this.props.state} />
