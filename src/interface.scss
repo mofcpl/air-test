@@ -295,7 +295,7 @@ main
 {
     grid-area: 4 / 3 / 6 / 4;
 
-    display: grid;
+    display: none;
     grid-template-rows: 1fr 8fr 2fr 4fr;
 
     padding: 1vw;

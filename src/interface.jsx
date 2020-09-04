@@ -71,7 +71,7 @@ export const Title = (props) =>
         <div id="title">
             <section>
                 <article>
-                    Air<span>test</span>
+                    Air<span>check</span>
                 </article>
             </section>
         </div>
@@ -172,8 +172,9 @@ export const Desc = (props) =>
             </div>
             <div id="note">Dane oraz opisy indeksów prezentowane na stronie airtest.pl pochodzą z serwisu <a href="http://powietrze.gios.gov.pl/pjp/home" target="_blank">powietrze.gios.gov.pl</a> administrowanego przez Główny Inspektorat Ochrony Środowiska</div>
             <div id="links">
-                <i className="icon-home" />
-                <a href="https://github.com/mofcpl" target="_blank"><i className="icon-github-circled" /></a>
+                
+                <a href="https://zbrogdom.pl/" target="_blank"><i className="icon-home" /></a>
+                <a href="https://github.com/mofcpl/air-test" target="_blank"><i className="icon-github-circled" /></a>
                 <a href="https://www.linkedin.com/in/zbrogdom/" target="_blank"><i className="icon-linkedin-squared" /></a>
             </div>
     </div> 
