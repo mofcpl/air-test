@@ -17,11 +17,20 @@ module.exports =
             {
                 test: /\.(css|scss)$/,
                 use: [ 'style-loader', 
-                    MiniCssExtractPlugin.loader, 
+                {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    esModule: false,
+                  },
+                }, 
                     {
                       loader: 'css-loader'
                     },
-                    { loader: 'postcss-loader', options: { config: { path: 'src/postcss-config/' }}},
+                    { loader: 'postcss-loader', options: {
+                      postcssOptions: {
+                        plugins: ["autoprefixer"]
+                      },
+                    },},
                     'sass-loader']
             },
 

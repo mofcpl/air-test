@@ -37,7 +37,7 @@ body, html, #App
     grid-template-rows: 1fr 11fr 24fr 5fr 13fr 1fr;
     -ms-grid-rows: 1fr 11fr 24fr 5fr 13fr 1fr;
 
-    @media (min-width: 800px) 
+    @media (min-width: 800px)
     {
       grid-template-columns: 1fr 10fr 16fr 1fr;
       -ms-grid-columns: 1fr 5fr 8fr 1fr;

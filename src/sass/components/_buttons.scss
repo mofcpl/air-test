@@ -1,0 +1,28 @@
+
+.button-check
+{
+    height: 70%;
+    width: 100%;
+    background-color: adjust-color(rgb(213, 242, 255), $lightness: - 60%);
+    border: 0;
+    border-radius: 5px;
+    color: rgb(213, 242, 255);
+    font-family: 'Anton', sans-serif;
+    font-size: 3vh;
+    border-bottom: 2px solid adjust-color(rgb(213, 242, 255), $lightness: - 70%);
+    border-top: 2px solid adjust-color(rgb(213, 242, 255), $lightness: - 50%);
+    outline: none;
+
+    &:hover
+    {
+        color: white;
+    }
+    &:active
+    {
+        color: white;
+        background-color: adjust-color(rgb(213, 242, 255), $lightness: - 70%);
+        border-top: 2px solid adjust-color(rgb(213, 242, 255), $lightness: - 80%);
+        border-bottom: 2px solid adjust-color(rgb(213, 242, 255), $lightness: - 60%);
+    }
+
+}

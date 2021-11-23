@@ -242,7 +242,7 @@ class App extends React.Component
     
 
         return(
-        <main>
+        <main class="container">
 
             <Title />
             <Station data={this.props.state} />
