@@ -21,7 +21,7 @@ const SET_DATA = "SET_DATA"
 // START -> POSITION -> NEAREST_STATION -> SENSORS -> DATA -> SUMMARY -> READY
 const defaultState =
 {
-    status: "START", 
+    status: "START",
     position:
     {
         latitude: 0,
