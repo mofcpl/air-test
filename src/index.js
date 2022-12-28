@@ -2,7 +2,7 @@ import style from "./main.scss";
 import "./css/fontello.css"
 
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom/client';
 import { Provider, connect } from 'react-redux'
 
 import {Summary, Data, Station, Button, Title, Desc} from "./interface.jsx"
@@ -289,5 +289,7 @@ class AppWrapper extends React.Component
     }
 };
 
-ReactDOM.render(<AppWrapper />, document.querySelector("#App"))
+const root = ReactDOM.createRoot(document.getElementById('App'));
+root.render(<AppWrapper />);
+
 
