@@ -39,27 +39,12 @@ module.exports =
             },
 
             {
-              test: /\.(png|jpe?g)/i,
-                use: [
-                {
-                  loader: "url-loader",
-                  options: {
-                    name: "./img/[name].[ext]",
-                    limit: 10000
-                  }
-                },
-          {
-            loader: "img-loader"
-          }
-        ]
+              test: /\.(svg|png|jpe?g)/i,
+              type: 'asset/resource'
             },
             {
               test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-              loader: 'url-loader',
-              options: {
-                limit: 4096,
-                name: './fonts/[name].[ext]?[hash]', // was '/fonts/[name].[ext]?[hash]',
-              },
+              type: 'asset/resource'
             },
         ]
     },

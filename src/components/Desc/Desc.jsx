@@ -1,5 +1,8 @@
 import React from "react";
 
+import githubLogo from '../../assets/github.svg';
+import linkedinLogo from '../../assets/linkedin.svg';
+
 const indexDesc = [
     "Jakość powietrza jest bardzo dobra, zanieczyszczenie powietrza nie stanowi zagrożenia dla zdrowia, warunki bardzo sprzyjające do wszelkich aktywności na wolnym powietrzu, bez ograniczeń.",
     "Jakość powietrza jest zadowalająca, zanieczyszczenie powietrza powoduje brak lub niskie ryzyko zagrożenia dla zdrowia. Można przebywać na wolnym powietrzu i wykonywać dowolną aktywność, bez ograniczeń.",
@@ -30,9 +33,8 @@ const Desc = (props) =>
             <div id="note">Dane oraz opisy indeksów prezentowane na stronie airtest.pl pochodzą z serwisu <a href="http://powietrze.gios.gov.pl/pjp/home" target="_blank">powietrze.gios.gov.pl</a> administrowanego przez Główny Inspektorat Ochrony Środowiska</div>
             <div id="links">
                 
-                <a href="https://zbrogdom.pl/" target="_blank"><i className="icon-home" /></a>
-                <a href="https://github.com/mofcpl/air-test" target="_blank"><i className="icon-github-circled" /></a>
-                <a href="https://www.linkedin.com/in/zbrogdom/" target="_blank"><i className="icon-linkedin-squared" /></a>
+                <a href="https://github.com/mofcpl/air-test" target="_blank"><img src={githubLogo} /></a>
+                <a href="https://www.linkedin.com/in/zbrogdom/" target="_blank"><img src={linkedinLogo} /></a>
             </div>
     </div> 
     )

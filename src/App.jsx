@@ -1,16 +1,14 @@
 import React, { useEffect, useReducer } from "react";
 
-import {Data} from './components/Data'
-import Title from './components/Title'
-import Station from './components/Station'
-import Summary from './components/Summary'
-import Desc from './components/Desc'
-import Button from './components/Button'
+import { Data } from './components/Data/Data'
+import Title from './components/Title/Title'
+import Station from './components/Station/Station'
+import Summary from './components/Summary/Summary'
+import Desc from './components/Desc/Desc'
+import Button from './components/Button/Button'
 
 import defaultState from './state'
 import appStateReducer from './reducer'
-
-require("babel-polyfill");
 
 const App = () =>
 {

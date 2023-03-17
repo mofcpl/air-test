@@ -1,6 +1,6 @@
 import React from "react";
 
-import {colors} from './Data'
+import {colors} from '../Data/Data'
 
 const Summary = (props) =>
 {

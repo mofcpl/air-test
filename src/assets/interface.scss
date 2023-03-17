@@ -328,6 +328,12 @@ main
         align-items: center;
         font-size: 3vw;
 
+        img
+        {
+            width: auto;
+            height: 50px;
+        }
+
         .icon-linkedin-squared
         {
             color: #0077B5;
